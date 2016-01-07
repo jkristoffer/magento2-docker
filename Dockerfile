@@ -11,3 +11,7 @@ RUN yum -y update && \
     cd /var/www/html && \
     curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer
+
+COPY ./conf.d/httpd.conf /etc/httpd/conf/httpd.conf
+COPY ./conf.d/php.ini /etc/php.ini
+COPY ./conf.d/auth.json /root/auth.json
