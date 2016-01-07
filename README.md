@@ -6,7 +6,7 @@ Fill in required creds in `./conf.d/auth.json` and `./conf.d/github.auth.json`
 
 Set up mysql container:
 
-`docker run --name my-mysql -e MYSQL_ROOT_PASSWORD=magento2 MYSQL_DATABASE=magento2 MYSQL_USER=magento2, MYSQL_PASSWORD=magento2 -d mysql:5.5`
+`docker run --name my-mysql -e MYSQL_ROOT_PASSWORD=magento2 -e MYSQL_DATABASE=magento2 -e MYSQL_USER=magento2 -e MYSQL_PASSWORD=magento2 -d mysql:5.7`
 
 Fire up your very own magento2 container! 
 

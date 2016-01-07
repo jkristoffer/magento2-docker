@@ -21,3 +21,20 @@ RUN cd /var/www/html && git clone https://github.com/magento/magento2.git && \
     cd magento2 && composer install && \
     chown -R :apache . && \
     find . -type d -exec chmod 770 {} \; && find . -type f -exec chmod 660 {} \; && chmod u+x bin/magento
+
+CMD /var/www/html/magento2/bin/magento setup:install --admin-firstname==Jane \
+    --admin-lastname=Doe \
+    --admin-email=your.mail@mail.com \
+    --admin-user=admin \
+    --admin-password='Gl0r10u5F00d' \
+    --db-host=mysql \
+    --db-name=magento2 \
+    --db-user=root \
+    --db-password=magento2 \
+    --db-prefix=mage \
+    --language=en_US \
+    --currency=SGD \
+    --timezone=Asia/Singapore \
+    --session-save=db && \
+    php /var/www/html/magento2/bin/magento sampledata:deploy
+
