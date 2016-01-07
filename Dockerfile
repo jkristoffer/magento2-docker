@@ -15,3 +15,4 @@ RUN yum -y update && \
 COPY ./conf.d/httpd.conf /etc/httpd/conf/httpd.conf
 COPY ./conf.d/php.ini /etc/php.ini
 COPY ./conf.d/auth.json /root/auth.json
+COPY ./conf.d/github.auth.json /root/.composer/auth.json
