@@ -18,6 +18,6 @@ COPY ./conf.d/auth.json /root/auth.json
 COPY ./conf.d/github.auth.json /root/.composer/auth.json
 
 RUN cd /var/www/html && git clone https://github.com/magento/magento2.git && \
-    composer install && \
+    cd magento2 && composer install && \
     chown -R :apache . && \
-    find . -type d -exec chmod 770 {} \; && find . -type f -exec chmod 660 {} \; && chmod u+x bin/magento && \
+    find . -type d -exec chmod 770 {} \; && find . -type f -exec chmod 660 {} \; && chmod u+x bin/magento
