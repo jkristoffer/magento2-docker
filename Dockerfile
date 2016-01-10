@@ -36,5 +36,8 @@ CMD /var/www/html/magento2/bin/magento setup:install --admin-firstname==Jane \
     --currency=SGD \
     --timezone=Asia/Singapore \
     --session-save=db && \
-    php /var/www/html/magento2/bin/magento sampledata:deploy
+    service httpd restart && \
+    cd /var/www/html/magento2 && chown -R :apache . && \
+    /bin/bash
 
+EXPOSE 80
