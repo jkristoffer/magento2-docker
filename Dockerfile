@@ -6,7 +6,10 @@ RUN rpm -Uvh https://mirror.webtatic.com/yum/el6/latest.rpm && \
     rpm --nosignature -i https://repo.varnish-cache.org/redhat/varnish-4.0.el6.rpm && \
     rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-6.rpm && \
     yum -y update && \
-    yum -y --enablerepo=remi,remi-test install curl wget httpd git mysql epel-release php56w php56w-opcache php56w-xml php56w-mcrypt php56w-gd php56w-devel php56w-mysql php56w-intl php56w-mbstring php56w-bcmath install redis varnish && \
+    yum -y --enablerepo=remi,remi-test install curl wget httpd git epel-release php56w php56w-opcache php56w-xml php56w-mcrypt php56w-gd php56w-devel php56w-mysql php56w-intl php56w-mbstring php56w-bcmath install redis varnish && \
+    wget http://repo.mysql.com/mysql-community-release-el6-5.noarch.rpm && \
+    rpm -ivh mysql-community-release-el6-5.noarch.rpm && \
+    yum -y install mysql-server && \
     cd /var/www/html && curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer
 
 # Copy configuration files
@@ -14,19 +17,22 @@ COPY ./conf.d/httpd.conf /etc/httpd/conf/httpd.conf
 COPY ./conf.d/php.ini /etc/php.ini
 COPY ./conf.d/auth.json /root/auth.json
 COPY ./conf.d/github.auth.json /root/.composer/auth.json
-
-# Start MySQL Service
-RUN service mysqld start
+COPY ./conf.d/mysql-script /root/mysql-script
 
 # GIT Clone lastest Magento2 Repo and Install
-RUN cd /var/www/html && git clone https://github.com/magento/magento2.git && cd magento2 &&\
-    composer install && \
-    ./bin/magento setup:install \
+# Seperating to 3 different commands to cache and shorten build times
+RUN cd /var/www/html && git clone https://github.com/magento/magento2.git && cd magento2
+RUN cd /var/www/html/magento2 && composer install 
+RUN service mysqld start && \
+    mysql -u root < /root/mysql-script && \
+    /var/www/html/magento2/bin/magento setup:install \
         --admin-firstname==Jane \
         --admin-lastname=Doe \
         --admin-email=your.mail@mail.com \
         --admin-user=admin \
         --admin-password='Gl0r10u5F00d' \
+        --db-name=magento2 \
+        --db-user=root \ 
         --db-prefix=mage \
         --language=en_US \
         --currency=SGD \
