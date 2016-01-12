@@ -20,7 +20,7 @@ COPY ./conf.d/github.auth.json /root/.composer/auth.json
 COPY ./conf.d/mysql-script /root/mysql-script
 
 # GIT Clone lastest Magento2 Repo and Install
-# Seperating to 3 different commands to cache and shorten build times
+# Seperating to 3 different commands to cache and shorten build times woth cache
 RUN cd /var/www/html && git clone https://github.com/magento/magento2.git && cd magento2
 RUN cd /var/www/html/magento2 && composer install 
 RUN service mysqld start && \
@@ -31,17 +31,17 @@ RUN service mysqld start && \
         --admin-email=your.mail@mail.com \
         --admin-user=admin \
         --admin-password='Gl0r10u5F00d' \
-        --db-name=magento2 \
-        --db-user=root \ 
-        --db-prefix=mage \
+        --db-name=magento \
+        --db-user=magento \ 
+        --db-password=magento \
         --language=en_US \
         --currency=SGD \
         --timezone=Asia/Singapore \
         --session-save=db
 
 # Set File Permissions
-RUN find . -type d -exec chmod 770 {} \; && find . -type f -exec chmod 660 {} \; && chmod u+x bin/magento && \
-    cd /var/www/html/magento2 && chown -R :apache .
+RUN cd /var/www/html/magento2/ && find . -type d -exec chmod 770 {} \; && find . -type f -exec chmod 660 {} \; && chmod u+x bin/magento && \
+    cd /var/www/html/magento2/ && chown -R :apache . 
 
 # Copy post-install configurations
 COPY ./conf.d/env.php /var/www/html/magento2/app/etc/env.php
@@ -49,9 +49,11 @@ COPY ./conf.d/default.vcl /etc/varnish/default.vcl
 COPY ./conf.d/varnish /etc/sysconfig/varnish
 
 # Start Apache, Redis and Varnish
-RUN service httpd restart && \
-    /etc/init/redis start && \
-    varnishd -d -f /etc/varnish/default.vcl
+CMD service httpd start && \
+    service mysqld start && \
+    service redis start && \
+    varnishd -Cf /etc/varnish/default.vcl && \
+    /bin/bash
 
 # Expose Port 80 for Apache web service and Port 3306 for MySQL daemon
-EXPOSE 80, 3306
+EXPOSE 80 8080 3306
