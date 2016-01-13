@@ -1,3 +1,3 @@
-CREATE DATABASE magento2;
-GRANT ALL ON magento2.* TO root@localhost;
+CREATE DATABASE magento;
+GRANT ALL ON magento.* TO magento@localhost IDENTIFIED BY 'magento';
 FLUSH PRIVILEGES;
