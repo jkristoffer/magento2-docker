@@ -21,7 +21,11 @@ COPY ./conf.d/mysql-script /root/mysql-script
 
 # GIT Clone lastest Magento2 Repo and Install
 # Seperating to 3 different commands to cache and shorten build times woth cache
-RUN cd /var/www/html && git clone https://github.com/magento/magento2.git && cd magento2
+RUN cd /var/www/html && git clone https://github.com/magento/magento2.git
+
+# 
+RUN cd /var/www/html/magento2/ && git checkout develop && git reset --hard 3991d65ea5b4c91b39f130ceadac7e413233ada6
+
 RUN cd /var/www/html/magento2 && composer install 
 RUN service mysqld start && \
     mysql -u root < /root/mysql-script && \
@@ -60,8 +64,9 @@ CMD set -x && service httpd start && \
     rm -rf /var/www/html/magento2/var/generation && \
     /var/www/html/magento2/bin/magento setup:config:set  --db-host=localhost --db-name=magento --db-user=magento --db-password=magento && \
     touch /var/www/html/magento2/var/log/system.log && \
-    chown -R :apache /var/www/html/magento2 && \
+    chown -R :apache /var/www/html/magento2/var/generation && \
     chmod 770 /var/www/html/magento2/var/log/system.log && \
+    chown :apache /var/www/html/magento2/var/log/system.log && \
     /bin/bash
 
 # Expose Port 80 for Apache web service and Port 3306 for MySQL daemon
