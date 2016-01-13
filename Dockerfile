@@ -26,22 +26,24 @@ RUN cd /var/www/html/magento2 && composer install
 RUN service mysqld start && \
     mysql -u root < /root/mysql-script && \
     /var/www/html/magento2/bin/magento setup:install \
-        --admin-firstname==Jane \
-        --admin-lastname=Doe \
-        --admin-email=your.mail@mail.com \
-        --admin-user=admin \
-        --admin-password='Gl0r10u5F00d' \
-        --db-name=magento \
-        --db-user=magento \ 
-        --db-password=magento \
-        --language=en_US \
-        --currency=SGD \
-        --timezone=Asia/Singapore \
-        --session-save=db
+--admin-firstname=Jane \
+--admin-lastname=Doe \
+--admin-email=your.mail@mail.com \
+--admin-user=admin \
+--admin-password='Gl0r10u5F00d' \
+--base-url={{base_url}} \
+--db-host=localhost \
+--db-name=magento \
+--db-user=magento \ 
+--db-password=magento \
+--language=en_US \
+--currency=SGD \
+--timezone=Asia/Singapore \
+--session-save=db
 
 # Set File Permissions
 RUN cd /var/www/html/magento2/ && find . -type d -exec chmod 770 {} \; && find . -type f -exec chmod 660 {} \; && chmod u+x bin/magento && \
-    cd /var/www/html/magento2/ && chown -R :apache . 
+    cd /var/www/html/magento2/ && chown -R :apache .
 
 # Copy post-install configurations
 COPY ./conf.d/env.php /var/www/html/magento2/app/etc/env.php
@@ -49,10 +51,17 @@ COPY ./conf.d/default.vcl /etc/varnish/default.vcl
 COPY ./conf.d/varnish /etc/sysconfig/varnish
 
 # Start Apache, Redis and Varnish
-CMD service httpd start && \
+CMD set -x && service httpd start && \
     service mysqld start && \
     service redis start && \
-    varnishd -Cf /etc/varnish/default.vcl && \
+    varnishd -f /etc/varnish/default.vcl && \
+    sleep 5 && \
+    curl 0.0.0.0:8080 && \
+    rm -rf /var/www/html/magento2/var/generation && \
+    /var/www/html/magento2/bin/magento setup:config:set  --db-host=localhost --db-name=magento --db-user=magento --db-password=magento && \
+    touch /var/www/html/magento2/var/log/system.log && \
+    chown -R :apache /var/www/html/magento2 && \
+    chmod 770 /var/www/html/magento2/var/log/system.log && \
     /bin/bash
 
 # Expose Port 80 for Apache web service and Port 3306 for MySQL daemon
