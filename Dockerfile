@@ -67,7 +67,7 @@ CMD set -x && service httpd start && \
     sleep 5 && \
     curl 0.0.0.0:8080 && \
     rm -rf /var/www/html/magento2/var/generation && \
-    /var/www/html/magento2/bin/magento setup:config:set  --db-host=localhost --db-name=magento --db-user=magento --db-password=magento && \
+    yes Y | /var/www/html/magento2/bin/magento setup:config:set  --db-host=localhost --db-name=magento --db-user=magento --db-password=magento && \
     touch /var/www/html/magento2/var/log/system.log && \
     chown -R :apache /var/www/html/magento2/var/generation && \
     chmod 770 /var/www/html/magento2/var/log/system.log && \
