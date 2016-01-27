@@ -10,7 +10,8 @@ RUN rpm -Uvh https://mirror.webtatic.com/yum/el6/latest.rpm && \
     wget http://repo.mysql.com/mysql-community-release-el6-5.noarch.rpm && \
     rpm -ivh mysql-community-release-el6-5.noarch.rpm && \
     yum -y install mysql-server && \
-    cd /var/www/html && curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer
+    cd /var/www/html && curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer && \
+    rm -rf /mysql-community-release-el6-5.noarch.rpm
 
 # Copy configuration files
 COPY ./conf.d/httpd.conf /etc/httpd/conf/httpd.conf
@@ -31,6 +32,7 @@ RUN cd /var/www/html/magento2 && composer install
 
 # Create MySQL User and Magento Tables && Mangento CLI Setup
 RUN service httpd start && \
+    cat /etc/my.cnf && \
     service mysqld start && \
     mysql -u root < /root/mysql-script && \
     /var/www/html/magento2/bin/magento setup:install \
@@ -52,7 +54,8 @@ RUN service httpd start && \
 
 # Set File Permissions
 RUN cd /var/www/html/magento2/ && find . -type d -exec chmod 770 {} \; && find . -type f -exec chmod 660 {} \; && chmod u+x bin/magento && \
-    cd /var/www/html/magento2/ && chown -R :apache .
+    cd /var/www/html/magento2/ && chown -R :apache . && \
+    rm -rf ./.git
 
 # Copy post-install configurations
 COPY ./conf.d/env.php /var/www/html/magento2/app/etc/env.php
