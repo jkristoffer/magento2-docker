@@ -47,7 +47,8 @@ RUN service httpd start && \
       --language=en_US \
       --currency=SGD \
       --timezone=Asia/Singapore \
-      --session-save=db
+      --session-save=db \
+      --backend-frontname=backoffice
 
 # Set File Permissions
 RUN cd /var/www/html/magento2/ && find . -type d -exec chmod 770 {} \; && find . -type f -exec chmod 660 {} \; && chmod u+x bin/magento && \
