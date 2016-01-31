@@ -1,7 +1,8 @@
 FROM centos:6
 
 # Install prerequisites
-RUN yum -y update && \
+RUN rpm -Uvh https://mirror.webtatic.com/yum/el6/latest.rpm http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm http://rpms.famillecollet.com/enterprise/remi-release-6.rpm && \
+    yum -y update && \
     yum -y --enablerepo=remi,remi-test install curl wget sendmail git epel-release php56w php56w-opcache php56w-xml php56w-mcrypt php56w-gd php56w-devel php56w-mysql php56w-intl php56w-mbstring php56w-bcmath nginx install && \
     wget http://repo.mysql.com/mysql-community-release-el6-5.noarch.rpm && \
     rpm -ivh mysql-community-release-el6-5.noarch.rpm && \
