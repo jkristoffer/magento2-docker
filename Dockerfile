@@ -6,7 +6,7 @@ RUN rpm -Uvh https://mirror.webtatic.com/yum/el6/latest.rpm && \
     rpm --nosignature -i https://repo.varnish-cache.org/redhat/varnish-4.0.el6.rpm && \
     rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-6.rpm && \
     yum -y update && \
-    yum -y --enablerepo=remi,remi-test install curl wget httpd git epel-release php56w php56w-opcache php56w-xml php56w-mcrypt php56w-gd php56w-devel php56w-mysql php56w-intl php56w-mbstring php56w-bcmath install redis varnish && \
+    yum -y --enablerepo=remi,remi-test install curl wget httpd sendmail git epel-release php56w php56w-opcache php56w-xml php56w-mcrypt php56w-gd php56w-devel php56w-mysql php56w-intl php56w-mbstring php56w-bcmath install redis varnish && \
     wget http://repo.mysql.com/mysql-community-release-el6-5.noarch.rpm && \
     rpm -ivh mysql-community-release-el6-5.noarch.rpm && \
     yum -y install mysql-server && \
@@ -64,6 +64,7 @@ COPY ./conf.d/mysql-script-2 /root/mysql-script-2
 CMD set -x && service httpd start && \
     service mysqld start && \
     service redis start && \
+    service sendmail start && \
     varnishd -f /etc/varnish/default.vcl && \
     sleep 5 && \
     curl 0.0.0.0:8080 && \
