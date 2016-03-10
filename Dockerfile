@@ -25,7 +25,8 @@ COPY ./conf.d/mysql-script /root/mysql-script
 RUN cd /var/www/html && git clone https://github.com/magento/magento2.git
 
 # Pull latest commit where last successfully tested
-RUN cd /var/www/html/magento2/ && git checkout develop && git reset --hard 3991d65ea5b4c91b39f130ceadac7e413233ada6
+RUN cd /var/www/html/magento2/ 
+## && git checkout develop && git reset --hard 3991d65ea5b4c91b39f130ceadac7e413233ada6
 
 # Composer Install
 RUN cd /var/www/html/magento2 && composer install

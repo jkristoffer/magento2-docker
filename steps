@@ -1,0 +1,4 @@
+remove var/generation
+cd /var/www/html/magento2/ && chown -R :apache 
+find /var/www/magento2/var/generation -type d -exec chmod g+s {} \;
+UPDATE magento.core_config_data SET value='{{base_url}}' WHERE config_id=1;
